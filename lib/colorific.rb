@@ -70,7 +70,7 @@ class MiniTest::Unit
     end
 
     def with_color
-      output.print "\e[#{Colorific[state]}m"
+      output.print Colorific[state]
       yield
       output.print "\e[0m"
     end
