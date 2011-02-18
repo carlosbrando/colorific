@@ -9,8 +9,8 @@ Gem::Specification.new do |s|
   s.authors     = ["Carlos Brando"]
   s.email       = ["eduardobrando@gmail.com"]
   s.homepage    = ""
-  s.summary     = %q{TODO: Write a gem summary}
-  s.description = %q{TODO: Write a gem description}
+  s.summary     = %q{Run your tests (Minitest) with lots of color!}
+  s.description = %q{Run your tests (Minitest) with lots of color!}
 
   s.rubyforge_project = "colorific"
 
