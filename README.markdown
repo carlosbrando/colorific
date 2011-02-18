@@ -1,0 +1,1 @@
+If you're using Ruby 1.9 add `gem 'colorific', :group => :test` in your Gemfile and watch an explosion of colors in your tests!
