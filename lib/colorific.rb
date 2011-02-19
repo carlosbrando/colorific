@@ -2,22 +2,10 @@ gem 'minitest'
 require "minitest/autorun"
 require 'progressbar'
 
-module Colorific
-  COLORS = { :clear => 0, :red => 31, :green => 32, :yellow => 33 }
+class MiniTest::Unit
+  ANSI_COLOR_CODES = { :clear => "\e[0m", :red => "\e[31m", :green => "\e[32m", :yellow => "\e[33m" }
   TEST_COLORS = { "F" => :red, "E" => :red, "S" => :yellow, "." => :green }
 
-  def self.[](color_name)
-    "\e[#{COLORS[color_name.to_sym]}m"
-  end
-
-  def self.colored(status, msg)
-    color_name = TEST_COLORS[status[0,1]]
-    return msg unless color_name
-    Colorific[color_name] + msg + Colorific[:clear]
-  end
-end
-
-class MiniTest::Unit
   alias :original_puke :puke
   alias :original_run_suites :_run_suites
   alias :original_status :status
@@ -27,7 +15,7 @@ class MiniTest::Unit
 
     report = @report.pop
     lines = report.split(/\n/)
-    lines[0] = Colorific.colored(r, lines[0])
+    lines[0] = tint(r, lines[0])
     @report << lines.join("\n")
     r
   end
@@ -44,11 +32,8 @@ class MiniTest::Unit
   end
 
   def print(*a)
-    case type = a.join
-    when '.'
-      increment
-    when 'S', 'F', 'E'
-      set_color(type)
+    if %w(. S F E).include?(a.join)
+      set_color(a.join)
       increment
     else
       output.print(*a)
@@ -56,21 +41,29 @@ class MiniTest::Unit
   end
 
   protected
+    def tint(status, msg)
+      color_name = TEST_COLORS[status[0,1]]
+      return msg unless color_name
+      ANSI_COLOR_CODES[color_name] + msg + ANSI_COLOR_CODES[:clear]
+    end
+
     def set_color(type)
       case type
-      when "F", "E"
-        @state = :red
+      when '.'
+        @state = :green unless @state == :yellow || @state == :red
       when "S"
         @state = :yellow unless @state == :red
+      when "F", "E"
+        @state = :red
       end
     end
 
     def state
-      @state ||= :green
+      @state ||= :clear
     end
 
     def with_color
-      output.print Colorific[state]
+      output.print ANSI_COLOR_CODES[state]
       yield
       output.print "\e[0m"
     end
