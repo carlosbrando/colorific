@@ -13,11 +13,13 @@ class MiniTest::Unit
   def puke(klass, meth, e)
     r = original_puke(klass, meth, e)
 
-    report = @report.pop
-    lines = report.split(/\n/)
-    lines[0] = tint(r, lines[0])
-    @report << lines.join("\n")
-    r
+    if report = @report.pop
+      lines = report.split(/\n/)
+      lines[0] = tint(r, lines[0])
+      @report << lines.join("\n")
+    end
+    
+    return r
   end
 
   def _run_suites(suites, type)
